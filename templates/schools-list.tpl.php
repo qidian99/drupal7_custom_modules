@@ -1,20 +1,21 @@
-<!-- <a class="ctools-use-modal" href="schools/30/delete">Modal Login</a> -->
-
-
 <?php
+
+drupal_add_js(drupal_get_path('module', 'schools') . '/school-list.js');
+
+echo "<div class='schools-list'>";
 if ($data->rowCount() > 0) {
-  echo "<table><tr><th>Id</th><th>Name</th><th>Address</th><th>Zip Code</th><th>Actions</th></tr>";
   foreach ($data as $v) {
-    echo "<tr>";
-    echo "<td>" . "<a href='/schools/" . $v->sid . "'>" . $v->sid . "</td>";
-    echo "<td>" . $v->name . "</td>";
-    echo "<td>" . $v->address . "</td>";
-    echo "<td>" . $v->zip_code . "</td>";
-    echo "<td><button onclick='window.location.href=\"" . "/schools/" . $v->sid . "/edit\"'>Edit</button>";
-    echo "<button onclick='window.location.href=\"" . "/schools/" . $v->sid . "/delete\"'>Delete</button></td>";
-    echo "</tr>";
+    echo "<div class='school' onclick=" . "'window.location.href = \"/schools/" . $v->sid . "\"'"  . ">";
+    echo "<div class='school__name'>" . $v->name . "</div>";
+    echo "<div class='school__addr_label'>Address</div>";
+    echo "<div class='school__address'>" . $v->address . "</div>";
+    echo "<div class='school__button_container'>
+        <button class='school__edit_button' onclick='window.location.href=\"" . "/schools/" . $v->sid . "/edit\";event.cancelBubble=true;'>Edit</button>";
+    echo "<button class='school__delete_button' onclick='window.location.href=\"" . "/schools/" . $v->sid . "/delete\";event.cancelBubble=true;'>Delete</button></div>";
+    echo "</div>";
   }
-  echo "</table>";
 } else {
   echo "No records found";
 }
+
+echo '</div>';

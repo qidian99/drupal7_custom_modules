@@ -1,0 +1,75 @@
+.edit-form__name {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 23px;
+  line-height: 27px;
+  width: calc(90% - 130px);
+}
+
+.create-form__name,
+.create-form__address,
+.create-form__zip_code {
+  background-color: #E4E3E3 !important;
+}
+
+.create-form__name,
+.create-form__address,
+.create-form__zip_code,
+.edit-form__address,
+.edit-form__zip_code {
+  background: #EDEDED;
+  width: 90%;
+  padding: 8px;
+  color: #6E6E6E;
+  border: 0px !important;
+}
+
+.edit-form__field label {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px !important;
+  line-height: 19px;
+  margin-bottom: 10px;
+}
+
+.edit-form__submit {
+  padding: 8px !important;
+  width: 100px;
+  border-radius: 6px !important;
+  background: #C4C4C4 !important;
+  border: 0px !important;
+  color: #0A8BC2 !important;
+  font-weight: bold !important;
+  position: absolute;
+  right: 80px;
+  top: 0px;
+}
+
+.create-form__submit {
+  height: 36px;
+  left: 495px;
+  top: 281px;
+  background-color: #C4C4C4 !important;
+  border-radius: 6px !important;
+}
+
+/* .schools-block .create-form__submit:nth-of-type(1) { */
+
+.schools-block .create-form__submit {
+  color: black;
+  width: 100%;
+}
+
+/* For the block title */
+#block-schools-create {
+  font-weight: bold;
+  background-color: #EDEDED;
+  padding-right: 50px
+}
+
+/* For edit form */
+#schools-edit-form {
+  position: relative;
+}

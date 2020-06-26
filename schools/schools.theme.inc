@@ -17,5 +17,9 @@ function schools_theme()
     'template' => 'get-school',
     'path' => $path_to_theme . '/templates/schools',
   );
+  $themes['edit_school'] = array(
+    'template' => 'edit-school',
+    'path' => $path_to_theme . '/templates/schools',
+  );
   return $themes;
 }

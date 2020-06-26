@@ -10,7 +10,7 @@ function _mymodule_make_link($link_text = '')
     $link_text = 'Magical Modal';
   }
 
-  return '<div id="magical-modal-link">' . l($link_text, 'schools/nojs', array('attributes' => array('class' => 'ctools-use-modal'))) . '</div>';
+  return '<div id="magical-modal-link">' . l($link_text, 'schools/forms/nojs', array('attributes' => array('class' => 'ctools-use-modal'))) . '</div>';
 }
 
 /**

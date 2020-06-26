@@ -13,6 +13,7 @@ core = 7.x
 ; Drupal 7 allows you to add CSS files in the module's .info file if it should be added on every page, just like theme .info files do. Here is an example from the node module's .info file:
 ; stylesheets[all][] = node.css
 stylesheets[all][] = school.css
+stylesheets[all][] = school-forms.css
 
 ; ; Add a style sheet for all media
 ; stylesheets[all][] = theStyle.css

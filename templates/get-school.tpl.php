@@ -18,5 +18,3 @@
   <button class="delete-button" onclick="window.location.href='/schools/<?php echo $school->sid ?>/delete'">Delete</button>
 </div>
 <?php
-
-// dpm($delete_cb);
