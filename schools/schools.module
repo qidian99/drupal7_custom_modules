@@ -1,0 +1,331 @@
+
+<?php
+
+require_once("schools.theme.inc"); // at the top of schools.module
+
+// hooks
+
+// To make a path, you need to create a Drupal hook_menu function. ‘Hook’ indicates the name of the module, so in our case the function’s name will be books_menu()
+/**
+ * implement hook_menu()
+ * create menu item
+ * schools_menu function will create a menu item which can be access with localhost/path/to/schools
+ */
+function schools_menu()
+{
+  $items = array();
+  $items['schools'] = array(
+    'title'             =>  'Schools',  // page title
+    'description'       =>  'Schools Information',  // description show when mouse hover on link
+    'page callback'     =>  'schools_list',  // callback function which is invoked when menu item is called.
+    'access callback'   =>  TRUE,  // any user can access this page
+  );
+
+  $items['schools/%'] = array(
+    // 'title'             =>  'School',
+    'description'       =>  'School Information',
+    'page callback' => 'schools_view_item_page',
+    'access callback'   =>  TRUE,
+    'page arguments' => array(
+      1,
+    ),
+  );
+
+  $items['schools/create'] = array(
+    'title' => 'Register a School',
+    'description' => 'Insert a new school in the Schools table',
+    'page callback' => 'drupal_get_form', // For a form, use drupal_get_form
+    'page arguments' => array('schools_form'), //put the name of the form here
+    'access callback' => TRUE,
+  );
+  $items['schools/%/edit'] = array(
+    'title' => 'Edit the information of a school',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('schools_edit_form', 1),
+    'access callback' => TRUE,
+  );
+
+  $items['schools/%/delete'] = array(
+    'title' => 'Delete school',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('school_delete_form', 1),
+    'access arguments' => array('delete schools'),
+    'access callback' => TRUE,
+    // 'type' => MENU_LOCAL_TASK,
+  );
+
+
+  $items['test'] = array(
+    'page callback' => 'mymodule_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['schools/%ctools_js'] = array(
+    'page callback' => 'mymodule_callback',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_admin_paths_alter().
+ */
+function schools_admin_paths_alter(&$paths)
+{
+  // $paths['schools/create'] = TRUE;
+}
+
+
+/**
+ * Implement the hook_preprocess_get_school:
+ */
+function schools_preprocess_get_school(&$variables)
+{
+  $variables['delete_cb'] = 'delete_cb';
+}
+
+
+// functions
+require_once('schools.module.inc');
+
+
+function delete_school($sid)
+{
+
+  db_delete('schools')
+    ->condition('sid', $sid)
+    ->execute();
+
+  drupal_goto("/schools");
+}
+
+
+function schools_list()
+{
+  // select all rows from books table
+  $query = db_select('schools', 's')->fields('s');
+  // execute above query to get the results from database table.
+  $result = $query->execute();
+  //send data to custom theme template
+  //theme schools_list created under sites\all\themes\bartik\templates\schools\schools-list.tpl.php
+  $output = theme('schools_list', array('data' => $result));
+  return $output;
+}
+
+function schools_view_item_page($sid)
+{
+  // echo is_int($sid) ? 'true' : 'false';
+  // false -- That's weird, actually I'm passing 18 as argument
+  // echo ctype_digit($sid) ? 'true' : 'false';
+  // true -- this works
+  if (ctype_digit($sid)) {
+    $query = db_select('schools', 's')
+      ->fields('s')
+      ->condition('sid', $sid); // equal by default
+
+    $result = $query->execute();
+
+    // echo $result->rowCount();
+    // 1
+    if ($result->rowCount() == 1) {
+      $obj = $result->fetchObject();
+      $output = theme('get_school', array('school' => $obj));
+      return $output;
+    }
+    return 'school does not exist';
+  }
+  return 'invalid school id';
+}
+
+function schools_form($form, &$form_state)
+{
+
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Name',
+    '#required' => TRUE,
+  );
+
+  $form['address'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Address',
+    '#required' => TRUE,
+  );
+
+  $form['zip_code'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Zip Code',
+    '#required' => TRUE,
+    '#size' => 5,
+    '#maxlength' => 5,
+  );
+
+  $form['submit_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Register'),
+  );
+
+  return $form;
+}
+
+function schools_form_validate($form, &$form_state)
+{
+  if (!ctype_digit($form_state['values']['zip_code'])) {
+    form_set_error('zip_code', t('Please enter a valid zip code.'));
+  }
+}
+
+function schools_form_submit($form, &$form_state)
+{
+  // TODO: need to set debugging/logger to make sure this is working
+  // For now, test the redirect to see if it works
+  // drupal_goto('/');
+
+  // Dump to /tmp/drupal_debug.txt
+  // Array
+  // (
+  //     [name] => Dian Qi
+  //     [address] => 3535 Lebon Dr
+  //     [zip_code] => 92122
+  //     [submit_button] => Register
+  //     [form_build_id] => form-GSQ2zir1jQr8YLSAKpoQ-FrkHuZsropSuigYhV6ga6Q
+  //     [form_token] => Xr3lJ2Czm3dy7KJDZJcVQNst9cWCx6qbZZkCk6WIlu0
+  //     [form_id] => schools_form
+  //     [op] => Register
+  // )
+  // dd($form_state['values']);
+
+  // create the school record and redirect to the school page
+  $name = $form_state['values']['name'];
+  $address = $form_state['values']['address'];
+  $zip_code = $form_state['values']['zip_code'];
+
+  $sid = db_insert('schools')
+    ->fields(array(
+      'name' => $name,
+      'address' => $address,
+      'zip_code' => $zip_code,
+    ))
+    ->execute();
+
+  // make sure to be the last inserted id
+  // dd($sid);
+
+  drupal_goto("/schools/" . $sid);
+}
+
+
+function schools_edit_form($form, &$form_state, $sid)
+{
+  // Save the node to the form state for use in the submit function
+  if (ctype_digit($sid)) {
+    $query = db_select('schools', 's')
+      ->fields('s')
+      ->condition('sid', $sid); // equal by default
+
+    $result = $query->execute();
+
+    // echo $result->rowCount();
+    // 1
+    if ($result->rowCount() == 1) {
+      $school = $result->fetchObject();
+
+      $form['sid'] = array(
+        '#type' => 'hidden',
+        '#value' => $sid
+      );
+
+      $form['name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Name'),
+        '#default_value' => $school->name,
+        '#required' => TRUE,
+      );
+
+      $form['address'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Address'),
+        '#default_value' => $school->address,
+        '#required' => TRUE,
+      );
+
+      $form['zip_code'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Zip Code'),
+        '#default_value' => $school->zip_code,
+        '#required' => TRUE,
+        '#size' => 5,
+        '#maxlength' => 5,
+      );
+
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Update school information'),
+
+      );
+      return $form;
+    } else {
+      return 'School does not exist';
+    }
+  }
+}
+
+function schools_edit_form_validate($form, &$form_state)
+{
+  schools_form_validate($form, $form_state);
+}
+
+function schools_edit_form_submit($form, &$form_state)
+{
+
+  $sid = $form_state['values']['sid'];
+  $name = $form_state['values']['name'];
+  $address = $form_state['values']['address'];
+  $zip_code = $form_state['values']['zip_code'];
+
+  db_update('schools')
+    ->fields(array(
+      'name' => $name,
+      'address' => $address,
+      'zip_code' => $zip_code,
+    ))
+    ->condition('sid', $sid)
+    ->execute();
+
+  // make sure to be the last inserted id
+  // dd($sid);
+
+  drupal_goto("/schools/" . $sid);
+}
+
+
+function school_delete_form($form, &$form_state, $sid)
+{
+  $form['#sid'] = $sid;
+  // Note confirm_form() can be used here, but I prefer to use my own for styling purposes
+  $form['header'] = array(
+    '#markup' => t('Are you sure you wish to delete the school with id <em>@value</em>?', array('@value' => $sid)),
+    '#prefix' => '<h2>',
+    '#suffix' => '</h2>',
+  );
+  $form['warning'] = array(
+    '#markup' => t('Warning, this action cannot be undone'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+  $form['delete_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete item'),
+  );
+  return $form;
+}
+
+function school_delete_form_submit($form, &$form_state)
+{
+  delete_school($form['#sid']);
+}

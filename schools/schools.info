@@ -1,0 +1,30 @@
+name = Schools
+description = "Provides CRUD operations for school data"
+core = 7.x
+; If your module comes with other modules or is meant to be used exclusively with other modules, enter the name of the package here. If left blank, the module will be listed as 'Other'. In general, this property should only be used by large multi-module packages, or by modules meant to extend these packages
+; package = Views
+
+; dependencies[] = modal_forms (>1.2+25-dev)
+
+; Drupal supports a dynamic-loading code registry. To support it, all modules must declare any code files containing class or interface declarations in the .info file, like so
+; When a module is enabled, Drupal will rescan all declared files and index all the classes and interfaces that it finds. Classes will be loaded automatically by PHP when they are first accessed.
+; files[] = tests/example.test
+
+; Drupal 7 allows you to add CSS files in the module's .info file if it should be added on every page, just like theme .info files do. Here is an example from the node module's .info file:
+; stylesheets[all][] = node.css
+stylesheets[all][] = school.css
+
+; ; Add a style sheet for all media
+; stylesheets[all][] = theStyle.css
+
+; ; Add a style sheet for screen and projection media
+; stylesheets[screen, projection][] = theScreenProjectionStyle.css
+
+; ; Add a style sheet for print media
+; stylesheets[print][] = thePrintStyle.css
+
+; ; Add a style sheet with media query
+; stylesheets[screen and (max-width: 600px)][] = theStyle600.css
+
+; As of version 7.x, the path of the module's (main) configuration page. If a module is enabled, a "Configure" and "Permissions" link appear. This will be the path of the "Configure" link for this particular module on the modules overview page.
+configure = admin/config/content/school
